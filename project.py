@@ -15,21 +15,23 @@ def three_articles():
 		# Data source
 		db = db_connection()
 		cur = db.cursor()
-		query = "SELECT articles.author, authors.name FROM articles, authors WHERE articles.author = authors.id;"
+		query = '''SELECT a.title, count(b.path) AS num 
+				   FROM articles a 
+				   JOIN log b 
+						ON b.path LIKE CONCAT ('%', a.slug, '%') 
+				   WHERE b.path <> '/' 
+				   GROUP BY a.title 
+				   ORDER BY num DESC LIMIT 8;'''
 		
 		# Get the data
 		cur.execute(query)
 		rows = cur.fetchall()
 
-		# Show me the raw data
-		print("Row Data: ")
-		print(rows)
-
 		# Parse the data
 		print
-		print "Author Names:"
+		print "Most popular articles:"
 		for row in rows:
-			print " ", row[1]
+			print " ", row[0], "-", row[1], "views"
 
 		# Close connections
 		cur.close()
@@ -46,6 +48,3 @@ def request_errors():
 	cur = db.cursor()
 
 three_articles()
-# define query
-# cursor object
-# execute query with cursor object, place into rows variable?
