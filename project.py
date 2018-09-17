@@ -82,7 +82,7 @@ def request_errors():
     print
     print "Days on which more than 1% of requests lead to errors:"
     for row in rows:
-        print " ", row[0], "-", round((row[1] * 100), 1), "errors"
+        print " ", row[0], "-", round((row[1] * 100), 1), "%", "errors"
 
     cur.close()
     db.close()
