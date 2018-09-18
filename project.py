@@ -6,7 +6,7 @@ invalid_input = True
 
 
 def db_connection():
-    """Create a connection to the DB."""
+    """Creates a connection to the specified DB."""
     dbName = "dbname=news"
     try:
         db = psycopg2.connect(dbName)
@@ -15,10 +15,31 @@ def db_connection():
         print("An error was made with the message: " + e)
 
 
+def execute_query(query):
+    """
+    execute_query takes an SQL query as a parameter, 
+    executes the query and returns the results as a list of tuples.
+
+    args:
+      query - (string) an SQL query statement to be executed.
+
+    returns:
+      A list of tuples containing the results of the query.
+    """
+    try:    
+        db = db_connection()
+        cur = db.cursor()
+        cur.execute(query)
+        rows = cur.fetchall()
+        cur.close()
+        db.close()
+        return rows
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+
 def three_articles():
     """Function to answer first question"""
-    db = db_connection()
-    cur = db.cursor()
     query = '''
         SELECT a.title, count(b.path) AS num
         FROM articles a
@@ -28,20 +49,15 @@ def three_articles():
         GROUP BY a.title
         ORDER BY num DESC LIMIT 3
         '''
-    cur.execute(query)
-    rows = cur.fetchall()
+    results = execute_query(query)
     print()
     print("Most popular articles:")
-    for title, views in rows:
+    for title, views in results:
         print('"{}" - {} views'.format(title, views))
-    cur.close()
-    db.close()
 
 
 def three_authors():
     """Function to answer second question"""
-    db = db_connection()
-    cur = db.cursor()
     query = '''
         SELECT b.name, count(c.path) AS views
         FROM articles a
@@ -52,20 +68,15 @@ def three_authors():
         GROUP BY b.name
         ORDER BY views DESC;
         '''
-    cur.execute(query)
-    rows = cur.fetchall()
+    results = execute_query(query)
     print()
     print("Most popular authors:")
-    for authors, views in rows:
-        print('"{}" - {} views'.format(authors, views))
-    cur.close()
-    db.close()
+    for authors, views in results:
+        print('{} - {} views'.format(authors, views))
 
 
 def request_errors():
     """Function to answer third question"""
-    db = db_connection()
-    cur = db.cursor()
     query = '''
     SELECT successcount.date,
         CAST(Fail AS float)/(CAST(Fail AS float)+CAST(Success AS float)) AS Percent
@@ -73,14 +84,11 @@ def request_errors():
     WHERE successcount.date = failcount.date
         AND CAST(Fail as float)/(CAST(Fail as float)+CAST(Success as float)) > .01;
     '''
-    cur.execute(query)
-    rows = cur.fetchall()
+    results = execute_query(query)
     print()
     print("Days on which more than 1% of requests lead to errors:")
-    for row in rows:
-        print(" ", row[0], "-", round((row[1] * 100), 2),"%", "errors")
-    cur.close()
-    db.close()
+    for dates, percents in results:
+        print(" ", "{:%B %d, %Y}".format(dates), "-", "{:.2%}".format(percents))
 
 
 def main(response):
@@ -97,19 +105,19 @@ def main(response):
     else:
         print("Enter a valid number or quit")
 
-
-while invalid_input:
-    """Get the user input for which question to answer"""
-    print()
-    print("Article Analysis Program")
-    print()
-    print("1. What are the most popular three articles of all time?")
-    print("2. Who are the most popular articles authors of all time?")
-    print("3. On which days did more than 1% of requests lead to errors?")
-    userInput = input(
-        "Please enter the number of the query you want answered or Q to quit:")
-    if userInput == "q":
-        import sys
-        sys.exit()
-    reponse = int(userInput)
-    main(userInput)
+if __name__ == '__main__':
+    while invalid_input:
+        """Get the user input for which question to answer"""
+        print()
+        print("Article Analysis Program")
+        print()
+        print("1. What are the most popular three articles of all time?")
+        print("2. Who are the most popular articles authors of all time?")
+        print("3. On which days did more than 1% of requests lead to errors?")
+        userInput = input(
+            "Please enter the number of the query you want answered or Q to quit:")
+        if userInput == "q":
+            import sys
+            sys.exit()
+        reponse = int(userInput)
+        main(userInput)
