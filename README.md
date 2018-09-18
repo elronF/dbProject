@@ -22,7 +22,7 @@ Once Vagrant and Virtual Box are installed, pull the Vagrantfile from this proje
 
 ## SQL REQUIREMENTS
 
-With your Linux VM installed, the news database schema will need to be added, which can be found in a zipped file called newsdata.zip in this repository.  Unzip the file and place it in your vagrant directory. Navigate to the vagrant folder within your VM environment and use the command `psql -d news -f newsdata.sql` to load the data.
+With your Linux VM installed, the news database schema will need to be added, which can be found in a zipped file called newsdata.zip in this repository.  Unzip the file and place it in the "vagrant" directory you previously created. Navigate to the vagrant folder within your VM environment and use the command `psql -d news -f newsdata.sql` to load the data.
 
 Once the data is loaded, these views will need to be created in the 'news' database in order to run the third query in this program:
 
