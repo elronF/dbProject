@@ -1,12 +1,12 @@
-#!/bin/env python3.5.2
+#!/usr/bin/env python3
 
 import psycopg2
 
 invalid_input = True
 
 
-# Create a connection to the DB.
 def db_connection():
+    """Create a connection to the DB."""
     dbName = "dbname=news"
     try:
         db = psycopg2.connect(dbName)
@@ -15,75 +15,76 @@ def db_connection():
         print("An error was made with the message: " + e)
 
 
-# Function  to first question"
 def three_articles():
+    """Function to answer first question"""
     db = db_connection()
     cur = db.cursor()
     query = '''
         SELECT a.title, count(b.path) AS num
         FROM articles a
         JOIN log b
-            ON b.path LIKE CONCAT ('%', a.slug)
+            ON b.path = '/article/' || a.slug
         WHERE b.path <> '/'
         GROUP BY a.title
-        ORDER BY num DESC LIMIT 8
+        ORDER BY num DESC LIMIT 3
         '''
     cur.execute(query)
     rows = cur.fetchall()
     print()
     print("Most popular articles:")
-    for row in rows:
-        print(" ", row[0], "-", row[1], "views")
+    for title, views in rows:
+        print('"{}" - {} views'.format(title, views))
     cur.close()
     db.close()
 
 
-# Function to answer second question"
 def three_authors():
+    """Function to answer second question"""
     db = db_connection()
     cur = db.cursor()
     query = '''
-        SELECT authors.name, count(log.path) AS views
-        FROM articles
-        JOIN authors
-            ON articles.author = authors.id
-        JOIN log
-            ON log.path LIKE CONCAT('%', articles.slug)
-        GROUP BY authors.name
+        SELECT b.name, count(c.path) AS views
+        FROM articles a
+        JOIN authors b
+            ON a.author = b.id
+        JOIN log c
+            ON c.path = '/article/' || a.slug
+        GROUP BY b.name
         ORDER BY views DESC;
         '''
     cur.execute(query)
     rows = cur.fetchall()
     print()
     print("Most popular authors:")
-    for row in rows:
-        print(" ", row[0], "-", row[1], "views")
+    for authors, views in rows:
+        print('"{}" - {} views'.format(authors, views))
     cur.close()
     db.close()
 
 
-# Function to answer third question"
 def request_errors():
+    """Function to answer third question"""
     db = db_connection()
     cur = db.cursor()
     query = '''
     SELECT successcount.date,
-        CAST(Fail AS float)/CAST(Success AS float) AS Percent
+        CAST(Fail AS float)/(CAST(Fail AS float)+CAST(Success AS float)) AS Percent
     FROM successcount, failcount
     WHERE successcount.date = failcount.date
-        AND CAST(Fail as float)/CAST(Success as float) >.01;
+        AND CAST(Fail as float)/(CAST(Fail as float)+CAST(Success as float)) > .01;
     '''
     cur.execute(query)
     rows = cur.fetchall()
     print()
     print("Days on which more than 1% of requests lead to errors:")
     for row in rows:
-        print(" ", row[0], "-", round((row[1] * 100), 1), "%", "errors")
+        print(" ", row[0], "-", round((row[1] * 100), 2),"%", "errors")
     cur.close()
     db.close()
 
 
 def main(response):
+    """Logic to run the program"""
     if response == "1":
         three_articles()
         invalid_input = False
@@ -98,6 +99,7 @@ def main(response):
 
 
 while invalid_input:
+    """Get the user input for which question to answer"""
     print()
     print("Article Analysis Program")
     print()
