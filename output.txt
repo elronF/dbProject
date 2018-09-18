@@ -1,0 +1,39 @@
+Article Analysis Program
+
+1. What are the most popular three articles of all time?
+2. Who are the most popular articles authors of all time?
+3. On which days did more than 1% of requests lead to errors?
+Please enter the number of the query you want answered or Q to quit:1
+
+Most popular articles:
+  Candidate is jerk, alleges rival - 338647 views
+  Bears love berries, alleges bear - 253801 views
+  Bad things gone, say good people - 170098 views
+  Goats eat Google's lawn - 84906 views
+  Trouble for troubled troublemakers - 84810 views
+  Balloon goons doomed - 84557 views
+  There are a lot of bears - 84504 views
+  Media obsessed with bears - 84383 views
+
+Article Analysis Program
+
+1. What are the most popular three articles of all time?
+2. Who are the most popular articles authors of all time?
+3. On which days did more than 1% of requests lead to errors?
+Please enter the number of the query you want answered or Q to quit:2
+
+Most popular authors:
+  Ursula La Multa - 507594 views
+  Rudolf von Treppenwitz - 423457 views
+  Anonymous Contributor - 170098 views
+  Markoff Chaney - 84557 views
+
+Article Analysis Program
+
+1. What are the most popular three articles of all time?
+2. Who are the most popular articles authors of all time?
+3. On which days did more than 1% of requests lead to errors?
+Please enter the number of the query you want answered or Q to quit:3
+
+Days on which more than 1% of requests lead to errors:
+  2016-07-17 - 2.3 % errors
